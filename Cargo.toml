@@ -1,0 +1,30 @@
+[package]
+name = "datascope"
+version = "0.1.0"
+edition = "2021"
+description = "Fast data profiling CLI for CSV, TSV, JSON, and JSONL files — type inference, statistics, quality checks, and pattern detection"
+license = "MIT"
+repository = "https://github.com/EdgarOrtegaRamirez/datascope"
+keywords = ["csv", "json", "data", "profiling", "statistics"]
+categories = ["command-line-utilities", "data-structures"]
+
+[[bin]]
+name = "datascope"
+path = "src/main.rs"
+
+[dependencies]
+clap = { version = "4.6", features = ["derive"] }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+csv = "1.4"
+anyhow = "1.0"
+regex = "1.13"
+
+[dev-dependencies]
+assert_cmd = "2.0"
+predicates = "3.0"
+tempfile = "3.27"
+
+[profile.release]
+opt-level = 3
+lto = true

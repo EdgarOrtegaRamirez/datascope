@@ -1,0 +1,11 @@
+name,age,email,salary,active,join_date
+Alice,30,alice@example.com,50000,true,2023-01-15
+Bob,25,bob@example.com,45000,false,2023-03-20
+Charlie,35,charlie@example.com,55000,true,2022-11-10
+Diana,28,diana@example.com,48000,true,2023-06-05
+Eve,,eve@example.com,,false,2023-02-28
+Frank,42,frank@example.com,62000,true,2021-08-12
+Grace,31,grace@example.com,51000,yes,2023-04-18
+Henry,29,henry@example.com,49000,true,2023-07-22
+Ivy,33,ivy@example.com,53000,false,2022-09-30
+Jack,38,jack@example.com,58000,true,2023-01-08
