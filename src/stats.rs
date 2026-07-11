@@ -13,6 +13,10 @@ pub struct NumericStats {
     pub q1: f64,
     pub q3: f64,
     pub sum: f64,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub outlier_count: Option<usize>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub outlier_percentage: Option<f64>,
 }
 
 /// Compute numeric statistics from a list of f64 values.
@@ -41,6 +45,18 @@ pub fn compute_numeric_stats(mut values: Vec<f64>) -> Option<NumericStats> {
         0.0
     };
 
+    // Compute outlier info
+    let iqr = q3 - q1;
+    let lower_bound = q1 - 1.5 * iqr;
+    let upper_bound = q3 + 1.5 * iqr;
+    let outlier_indices: Vec<usize> = values
+        .iter()
+        .enumerate()
+        .filter(|(_, v)| **v < lower_bound || **v > upper_bound)
+        .map(|(i, _)| i)
+        .collect();
+    let outlier_count = outlier_indices.len();
+
     Some(NumericStats {
         count,
         min,
@@ -51,6 +67,12 @@ pub fn compute_numeric_stats(mut values: Vec<f64>) -> Option<NumericStats> {
         q1,
         q3,
         sum,
+        outlier_count: Some(outlier_count),
+        outlier_percentage: Some(if count > 0 {
+            (outlier_count as f64 / count as f64) * 100.0
+        } else {
+            0.0
+        }),
     })
 }
 

@@ -44,6 +44,10 @@ pub struct Cli {
     /// Print only the summary (no per-column details).
     #[arg(long = "summary-only")]
     pub summary_only: bool,
+
+    /// Generate a JSON Schema (Draft 2020-12) instead of a data profile.
+    #[arg(long = "schema")]
+    pub schema: bool,
 }
 
 #[derive(Clone, Debug, ValueEnum)]

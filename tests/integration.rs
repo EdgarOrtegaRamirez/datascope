@@ -281,6 +281,64 @@ fn test_empty_file_error() {
 }
 
 #[test]
+fn test_schema_generation() {
+    let csv_path = fixture_path("sample.csv");
+    let mut cmd = bin();
+    cmd.arg(&csv_path).arg("--schema");
+    let output = cmd.assert().success().get_output().stdout.clone();
+    let parsed: serde_json::Value = serde_json::from_slice(&output).unwrap();
+    assert_eq!(parsed["$schema"], "https://json-schema.org/draft/2020-12/schema");
+    assert_eq!(parsed["type"], "object");
+    assert_eq!(parsed["properties"]["name"]["type"], "string");
+    assert_eq!(parsed["properties"]["age"]["type"], "integer");
+    assert!(parsed["required"].as_array().unwrap().contains(&serde_json::Value::String("name".to_string())));
+}
+
+#[test]
+fn test_schema_jsonl_input() {
+    let jsonl_path = fixture_path("sample.jsonl");
+    let mut cmd = bin();
+    cmd.arg(&jsonl_path).arg("--schema");
+    let output = cmd.assert().success().get_output().stdout.clone();
+    let parsed: serde_json::Value = serde_json::from_slice(&output).unwrap();
+    assert_eq!(parsed["$schema"], "https://json-schema.org/draft/2020-12/schema");
+    assert!(parsed["properties"].is_object());
+}
+
+#[test]
+fn test_schema_stdin() {
+    let csv_data = "name,age\nAlice,30\nBob,25\n";
+    let mut cmd = bin();
+    cmd.arg("-")
+        .arg("--format")
+        .arg("csv")
+        .arg("--schema");
+    cmd.write_stdin(csv_data);
+    let output = cmd.assert().success().get_output().stdout.clone();
+    let parsed: serde_json::Value = serde_json::from_slice(&output).unwrap();
+    assert_eq!(parsed["properties"]["name"]["type"], "string");
+    assert_eq!(parsed["properties"]["age"]["type"], "integer");
+}
+
+#[test]
+fn test_numeric_stats_with_outliers() {
+    let csv_data = "val\n10\n12\n11\n13\n9\n100\n";
+    let mut cmd = bin();
+    cmd.arg("-")
+        .arg("--format")
+        .arg("csv")
+        .arg("--output")
+        .arg("json");
+    cmd.write_stdin(csv_data);
+    let output = cmd.assert().success().get_output().stdout.clone();
+    let parsed: serde_json::Value = serde_json::from_slice(&output).unwrap();
+    let val_col = parsed["columns"][0].as_object().unwrap();
+    let ns = &val_col["numeric_stats"];
+    assert_eq!(ns["outlier_count"], 1);
+    assert!(ns["outlier_percentage"].as_f64().unwrap() > 15.0);
+}
+
+#[test]
 fn test_stdin_requires_format() {
     let mut cmd = bin();
     cmd.arg("-").arg("--output").arg("json");

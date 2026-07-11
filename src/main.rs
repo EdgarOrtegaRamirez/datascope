@@ -5,6 +5,7 @@ mod infer;
 mod output;
 mod pattern;
 mod profile;
+mod schema;
 mod stats;
 
 use clap::Parser;
@@ -83,6 +84,13 @@ fn run(args: &Cli) -> Result<bool, DatascopeError> {
 
     let mut reader = io::Cursor::new(input_data);
     let data = format::read_data(&mut reader, input_format)?;
+
+    // If --schema is specified, generate and output JSON Schema
+    if args.schema {
+        let json_schema = schema::generate_schema(&data);
+        println!("{json_schema}");
+        return Ok(false);
+    }
 
     // Profile
     let options = ProfileOptions {

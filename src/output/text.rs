@@ -54,6 +54,17 @@ pub fn render_text(profile: &DatasetProfile) -> String {
             out.push_str(&format!("    Q1:     {}\n", format_num(stats.q1)));
             out.push_str(&format!("    Q3:     {}\n", format_num(stats.q3)));
             out.push_str(&format!("    Sum:    {}\n", format_num(stats.sum)));
+            if let Some(outlier_count) = stats.outlier_count {
+                if outlier_count > 0 {
+                    out.push_str(&format!(
+                        "    Outliers: {} ({:.1}%)\n",
+                        outlier_count,
+                        stats.outlier_percentage.unwrap_or(0.0)
+                    ));
+                } else {
+                    out.push_str("    Outliers: None\n");
+                }
+            }
         }
 
         if let Some(ref pattern) = col.detected_pattern {
