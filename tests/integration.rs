@@ -287,11 +287,17 @@ fn test_schema_generation() {
     cmd.arg(&csv_path).arg("--schema");
     let output = cmd.assert().success().get_output().stdout.clone();
     let parsed: serde_json::Value = serde_json::from_slice(&output).unwrap();
-    assert_eq!(parsed["$schema"], "https://json-schema.org/draft/2020-12/schema");
+    assert_eq!(
+        parsed["$schema"],
+        "https://json-schema.org/draft/2020-12/schema"
+    );
     assert_eq!(parsed["type"], "object");
     assert_eq!(parsed["properties"]["name"]["type"], "string");
     assert_eq!(parsed["properties"]["age"]["type"], "integer");
-    assert!(parsed["required"].as_array().unwrap().contains(&serde_json::Value::String("name".to_string())));
+    assert!(parsed["required"]
+        .as_array()
+        .unwrap()
+        .contains(&serde_json::Value::String("name".to_string())));
 }
 
 #[test]
@@ -301,7 +307,10 @@ fn test_schema_jsonl_input() {
     cmd.arg(&jsonl_path).arg("--schema");
     let output = cmd.assert().success().get_output().stdout.clone();
     let parsed: serde_json::Value = serde_json::from_slice(&output).unwrap();
-    assert_eq!(parsed["$schema"], "https://json-schema.org/draft/2020-12/schema");
+    assert_eq!(
+        parsed["$schema"],
+        "https://json-schema.org/draft/2020-12/schema"
+    );
     assert!(parsed["properties"].is_object());
 }
 
@@ -309,10 +318,7 @@ fn test_schema_jsonl_input() {
 fn test_schema_stdin() {
     let csv_data = "name,age\nAlice,30\nBob,25\n";
     let mut cmd = bin();
-    cmd.arg("-")
-        .arg("--format")
-        .arg("csv")
-        .arg("--schema");
+    cmd.arg("-").arg("--format").arg("csv").arg("--schema");
     cmd.write_stdin(csv_data);
     let output = cmd.assert().success().get_output().stdout.clone();
     let parsed: serde_json::Value = serde_json::from_slice(&output).unwrap();

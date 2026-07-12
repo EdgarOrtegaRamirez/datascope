@@ -161,21 +161,9 @@ mod tests {
         let data = make_data(
             vec!["name".to_string(), "age".to_string(), "active".to_string()],
             vec![
-                vec![
-                    "Alice".to_string(),
-                    "30".to_string(),
-                    "true".to_string(),
-                ],
-                vec![
-                    "Bob".to_string(),
-                    "25".to_string(),
-                    "false".to_string(),
-                ],
-                vec![
-                    "Charlie".to_string(),
-                    "35".to_string(),
-                    "true".to_string(),
-                ],
+                vec!["Alice".to_string(), "30".to_string(), "true".to_string()],
+                vec!["Bob".to_string(), "25".to_string(), "false".to_string()],
+                vec!["Charlie".to_string(), "35".to_string(), "true".to_string()],
             ],
         );
 
@@ -250,10 +238,7 @@ mod tests {
 
     #[test]
     fn test_generate_schema_empty_dataset() {
-        let data = make_data(
-            vec!["col1".to_string(), "col2".to_string()],
-            Vec::new(),
-        );
+        let data = make_data(vec!["col1".to_string(), "col2".to_string()], Vec::new());
 
         let schema = generate_schema(&data);
         assert_eq!(schema.root_type, "object");
@@ -276,10 +261,12 @@ mod tests {
 
         let schema = generate_schema(&data);
         let json = schema.to_string();
-        let parsed: serde_json::Value =
-            serde_json::from_str(&json).expect("should be valid JSON");
+        let parsed: serde_json::Value = serde_json::from_str(&json).expect("should be valid JSON");
 
-        assert_eq!(parsed["$schema"], "https://json-schema.org/draft/2020-12/schema");
+        assert_eq!(
+            parsed["$schema"],
+            "https://json-schema.org/draft/2020-12/schema"
+        );
         assert_eq!(parsed["type"], "object");
         assert!(parsed["properties"].is_object());
         assert!(parsed["required"].is_array());
